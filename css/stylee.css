@@ -25,7 +25,7 @@ h1 {
 
 .container {
     width: 550px;
-    margin:auto;
+    margin: auto;
 }
 
 .form {
@@ -96,12 +96,13 @@ h1 {
 
 .tasks .task span {
     font-weight: bold;
-    font-size: 10px;
+    font-size: 12px;
     background-color: #f44336;
     color: white;
     padding: 3px 7px;
     border-radius: 4px;
     cursor: pointer;
+    font-weight: 500;
 }
 
 .tasks .task .doneBtn {
@@ -112,5 +113,9 @@ h1 {
 @media (max-width:776px) {
     .container {
         width: 85%;
+    }
+
+    .tasks .task .doneBtn {
+        margin-right: 7px;
     }
 }
