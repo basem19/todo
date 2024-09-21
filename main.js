@@ -1,94 +1,67 @@
-let input = document.querySelector('.input')
-let submit = document.querySelector('.add')
-let tasksDiv = document.querySelector('.tasks')
+let input = document.querySelector('.input');
+let submit = document.querySelector('.add');
+let tasksDiv = document.querySelector('.tasks');
+let messageBox = document.getElementById('messageBox');
 
-let tasksArray = []
+let tasksArray = JSON.parse(window.localStorage.getItem('tasks')) || [];
 
-if (window.localStorage.getItem('tasks')) {
-   tasksArray = JSON.parse(window.localStorage.getItem('tasks'))
+function renderTasks() {
+   tasksDiv.innerHTML = '';
+   tasksArray.forEach(task => {
+      let taskDiv = document.createElement('div');
+      taskDiv.className = 'task' + (task.completed ? ' done' : ''); // إضافة "done" إذا كانت المهمة مكتملة
+      taskDiv.setAttribute('id', task.id);
+      taskDiv.innerHTML = `<h4>${task.title}</h4>
+            <span class="doneBtn"><i class="fas fa-check"></i> Complete</span>
+            <span class="delete"><i class="fas fa-trash-alt"></i> Delete</span>`;
+      tasksDiv.appendChild(taskDiv);
+   });
 }
-gitDataLocalStorage()
 
+function showMessage(message, iconClass) {
+   document.getElementById('messageIcon').innerHTML = `<i class="${iconClass}"></i>`;
+   document.getElementById('messageText').innerText = message;
+   messageBox.classList.add('show');
+   setTimeout(() => {
+      messageBox.classList.remove('show');
+   }, 3000);
+}
+
+submit.onclick = function () {
+   if (input.value.trim() !== "") {
+      let taskObj = {
+         id: Date.now(),
+         title: input.value.trim(),
+         completed: false
+      };
+      tasksArray.push(taskObj);
+      window.localStorage.setItem('tasks', JSON.stringify(tasksArray));
+      renderTasks();
+      input.value = '';
+      showMessage('Task added successfully!', 'fas fa-check-circle'); // أيقونة إيجابية
+   } else {
+      showMessage('Please enter a task before adding!', 'fas fa-exclamation-circle'); // أيقونة تحذيرية
+   }
+};
 
 tasksDiv.addEventListener('click', (e) => {
    if (e.target.classList.contains('delete')) {
-      deleteTask(e.target.parentElement.getAttribute('id'))
-      e.target.parentElement.remove()
+      tasksArray = tasksArray.filter(task => task.id != e.target.parentElement.id);
+      window.localStorage.setItem('tasks', JSON.stringify(tasksArray));
+      renderTasks();
+      showMessage('Task deleted successfully!', 'fas fa-trash-alt'); // أيقونة الحذف
    }
-
    if (e.target.classList.contains('doneBtn')) {
-      toggleStats(e.target.parentElement.getAttribute('id'))
-      e.target.parentElement.classList.toggle('done')
-   }
-})
-
-
-submit.onclick = function () {
-   if (input.value !== "") {
-      addArray(input.value)
-      input.value = ''
-   }
-}
-
-function addArray(tasksText) {
-   let taskOj = {
-      id: Date.now(),
-      title: tasksText,
-      stats: false,
-   };
-   tasksArray.push(taskOj)
-   addElement(tasksArray)
-   addDataLocalStorage(tasksArray)
-}
-
-function addElement(tasksArray) {
-   tasksDiv.innerHTML = "";
-   tasksArray.forEach((taskOj) => {
-      let div = document.createElement('div')
-      div.id = taskOj.id
-      div.className = 'task'
-      if (taskOj.stats) {
-         div.className = 'task done'
-      }
-      let text =document.createElement('h4')
-      text.appendChild(document.createTextNode(taskOj.title))
-      div.appendChild(text)
-      let span = document.createElement('span')
-      span.className = 'delete'
-      span.appendChild(document.createTextNode('Delete'))
-      let done = document.createElement('span')
-      done.className ='doneBtn'
-      done.appendChild(document.createTextNode('Done'))
-      div.appendChild(done)
-      div.appendChild(span)
-      tasksDiv.appendChild(div)
-   })
-}
-
-function addDataLocalStorage(tasksArray) {
-   window.localStorage.setItem('tasks', JSON.stringify(tasksArray))
-}
-
-function gitDataLocalStorage() {
-   let data = window.localStorage.getItem('tasks')
-   if (data) {
-      let tasks = JSON.parse(data)
-      addElement(tasks)
-   }
-}
-
-function deleteTask(taskId) {
-   tasksArray = tasksArray.filter((el) => el.id != taskId)
-   addDataLocalStorage(tasksArray)
-}
-
-function toggleStats(taskId) {
-   for (let i = 0; i < tasksArray.length; i++) {
-      if (tasksArray[i].id == taskId) {
-         tasksArray[i].stats == false ? tasksArray[i].stats = true : tasksArray[i].stats = false
+      const taskId = e.target.parentElement.id; // الحصول على ID المهمة
+      const task = tasksArray.find(task => task.id == taskId);
+      if (task) {
+         task.completed = !task.completed; // تغيير حالة الإنجاز
+         window.localStorage.setItem('tasks', JSON.stringify(tasksArray));
+         renderTasks(); // إعادة عرض المهام بعد التعديل
+         showMessage('Task completed!', 'fas fa-check'); // أيقونة التحفيز
       }
    }
-   addDataLocalStorage(tasksArray)
-}
+});
 
-
+// تحميل المهام عند تحميل الصفحة
+renderTasks();
