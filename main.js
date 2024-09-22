@@ -4,6 +4,7 @@ let tasksDiv = document.querySelector('.tasks');
 let messageBox = document.getElementById('messageBox');
 
 let tasksArray = JSON.parse(window.localStorage.getItem('tasks')) || [];
+window.localStorage.setItem('tasks', JSON.stringify(tasksArray));
 
 function renderTasks() {
    tasksDiv.innerHTML = '';
