@@ -9,11 +9,14 @@ function renderTasks() {
    tasksDiv.innerHTML = '';
    tasksArray.forEach(task => {
       let taskDiv = document.createElement('div');
-      taskDiv.className = 'task' + (task.completed ? ' done' : ''); // إضافة "done" إذا كانت المهمة مكتملة
+      taskDiv.className = 'task' + (task.completed ? ' done' : '');
       taskDiv.setAttribute('id', task.id);
-      taskDiv.innerHTML = `<h4>${task.title}</h4>
-            <span class="doneBtn"><i class="fas fa-check"></i> Complete</span>
-            <span class="delete"><i class="fas fa-trash-alt"></i> Delete</span>`;
+      taskDiv.innerHTML = `
+         <h4>${task.title}</h4>
+         <div>
+            <span class="doneBtn" data-id="${task.id}"><i class="fas fa-check"></i> Complete</span>
+            <span class="delete" data-id="${task.id}"><i class="fas fa-trash-alt"></i> Delete</span>
+         </div>`;
       tasksDiv.appendChild(taskDiv);
    });
 }
@@ -38,30 +41,29 @@ submit.onclick = function () {
       window.localStorage.setItem('tasks', JSON.stringify(tasksArray));
       renderTasks();
       input.value = '';
-      showMessage('Task added successfully!', 'fas fa-check-circle'); // أيقونة إيجابية
+      showMessage('Task added successfully!', 'fas fa-check-circle');
    } else {
-      showMessage('Please enter a task before adding!', 'fas fa-exclamation-circle'); // أيقونة تحذيرية
+      showMessage('Please enter a task before adding!', 'fas fa-exclamation-circle');
    }
 };
 
 tasksDiv.addEventListener('click', (e) => {
+   const taskId = e.target.getAttribute('data-id'); 
    if (e.target.classList.contains('delete')) {
-      tasksArray = tasksArray.filter(task => task.id != e.target.parentElement.id);
+      tasksArray = tasksArray.filter(task => task.id != taskId);
       window.localStorage.setItem('tasks', JSON.stringify(tasksArray));
       renderTasks();
-      showMessage('Task deleted successfully!', 'fas fa-trash-alt'); // أيقونة الحذف
+      showMessage('Task deleted successfully!', 'fas fa-trash-alt');
    }
    if (e.target.classList.contains('doneBtn')) {
-      const taskId = e.target.parentElement.id; // الحصول على ID المهمة
       const task = tasksArray.find(task => task.id == taskId);
       if (task) {
-         task.completed = !task.completed; // تغيير حالة الإنجاز
+         task.completed = !task.completed;
          window.localStorage.setItem('tasks', JSON.stringify(tasksArray));
-         renderTasks(); // إعادة عرض المهام بعد التعديل
-         showMessage('Task completed!', 'fas fa-check'); // أيقونة التحفيز
+         renderTasks();
+         showMessage(task.completed ? 'Task completed!' : 'Task marked incomplete!', 'fas fa-check');
       }
    }
 });
 
-// تحميل المهام عند تحميل الصفحة
 renderTasks();

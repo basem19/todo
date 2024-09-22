@@ -138,16 +138,6 @@ h1 {
     margin-right: 15px;
 }
 
-@media (max-width:776px) {
-    .container {
-        width: 85%;
-    }
-
-    .tasks .task .doneBtn {
-        margin-right: 7px;
-    }
-}
-
 .message {
     display: none;
     position: fixed;
@@ -172,4 +162,30 @@ h1 {
 .message i {
     margin-right: 10px;
     font-size: 1.2em;
+}
+
+@media (max-width: 776px) {
+    .container {
+        width: 85%;
+    }
+
+    .tasks .task {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .tasks .task div {
+        margin-top: 8px;
+        align-self: flex-end;
+    }
+
+    .tasks .task h4 {
+        align-self: flex-start;
+    }
+
+    .tasks .task .doneBtn {
+        margin-right: 7px;
+        margin-bottom: 5px;
+    }
+
 }
